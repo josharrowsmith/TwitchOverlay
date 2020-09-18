@@ -6,7 +6,7 @@ const startBtn = document.getElementById('startBtn');
 startBtn.onclick = async () => {
   cron.schedule(`* * * * *`, async () => {
     const number = await initBrowser();
-    startBtn.innerText = number;
+    startBtn.innerHTML = `<h1>GM CLEARS<br>${number}</h1>`;
   });
 };
 
@@ -16,7 +16,6 @@ async function initBrowser() {
     headless: true
   });
   this.page = await browser.newPage();
-  await this.page.setViewport({ height: 1440, width: 1920 });
   await Promise.all([
     page.goto(`https://grandmaster.report/user/3/4611686018487695004`),
     page.waitForNavigation({ waitUntil: 'networkidle0' }),

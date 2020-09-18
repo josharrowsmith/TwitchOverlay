@@ -2,6 +2,10 @@
 ::-webkit-scrollbar {
   display: none;
 }
+
+:root{
+  background-color: transparent;
+}
 html {
   background-color: transparent;
 }
@@ -9,7 +13,7 @@ html {
 body {
   text-align: center;
   padding-top: 20px;
-  width: 150px;
+  width: 200px;
   height: 150px;
   overflow-y: hidden;
   background: transparent!important;
@@ -25,9 +29,9 @@ input[type="submit"] {
   cursor: pointer;
   position: relative;
   box-sizing: border-box;
-  min-width: 80px;
-  min-height: 40px;
-  background-color: #ff00dd;
+  min-width: 150px;
+  min-height: 100px;
+  background-color: 	#9400D3;
   color: #ffffff;
   line-height: 1;
   text-transform: uppercase;
@@ -56,16 +60,16 @@ input[type="submit"].neon {
   background: transparent !important;
   border: 0.1em solid #ffffff;
   color: #ffffff;
-  text-shadow: #ffffff 0px 0px 0.15em, #ffffff 0px 0px 0.3em, #ffffff 0px 0px 0.45em, #ff00dd 0px 0px 0.3em, #ff00dd 0px 0px 0.52em, #ff00dd 0px 0px 0.6em, #ff00dd 0px 0px 0.75em;
-  box-shadow: #ffffff 0px 0px 0.075em, #ffffff 0px 0px 0.15em, #ffffff 0px 0px 0.22em, #ff00dd 0px 0px 0.3em, #ff00dd 0px 0px 0.52em, #ff00dd 0px 0px 0.6em, #ff00dd 0px 0px 0.75em, inset #ff00dd 0 0 0.6em;
+  text-shadow: #ffffff 0px 0px 0.15em, #ffffff 0px 0px 0.3em, #ffffff 0px 0px 0.45em, 	#9400D3 0px 0px 0.3em, 	#9400D3 0px 0px 0.52em, 	#9400D3 0px 0px 0.6em, 	#9400D3 0px 0px 0.75em;
+  box-shadow: #ffffff 0px 0px 0.075em, #ffffff 0px 0px 0.15em, #ffffff 0px 0px 0.22em, 	#9400D3 0px 0px 0.3em, 	#9400D3 0px 0px 0.52em, 	#9400D3 0px 0px 0.6em, 	#9400D3 0px 0px 0.75em, inset 	#9400D3 0 0 0.6em;
 }
 .button.neon:hover,
 button.neon:hover,
 input[type="button"].neon:hover,
 input[type="reset"].neon:hover,
 input[type="submit"].neon:hover {
-  text-shadow: #ffffff 0px 0px 0.3em, #ffffff 0px 0px 0.6em, #ffffff 0px 0px 0.9em, #ff00dd 0px 0px 0.6em, #ff00dd 0px 0px 1.04em, #ff00dd 0px 0px 1.2em, #ff00dd 0px 0px 1.5em;
-  box-shadow: #ffffff 0px 0px 0.15em, #ffffff 0px 0px 0.3em, #ffffff 0px 0px 0.44em, #ff00dd 0px 0px 0.6em, #ff00dd 0px 0px 1.04em, #ff00dd 0px 0px 1.2em, #ff00dd 0px 0px 1.5em, inset #ff00dd 0 0 1.2em;
+  text-shadow: #ffffff 0px 0px 0.3em, #ffffff 0px 0px 0.6em, #ffffff 0px 0px 0.9em, 	#9400D3 0px 0px 0.6em, 	#9400D3 0px 0px 1.04em, 	#9400D3 0px 0px 1.2em, 	#9400D3 0px 0px 1.5em;
+  box-shadow: #ffffff 0px 0px 0.15em, #ffffff 0px 0px 0.3em, #ffffff 0px 0px 0.44em, 	#9400D3 0px 0px 0.6em, 	#9400D3 0px 0px 1.04em, 	#9400D3 0px 0px 1.2em, 	#9400D3 0px 0px 1.5em, inset 	#9400D3 0 0 1.2em;
 }
 
 
