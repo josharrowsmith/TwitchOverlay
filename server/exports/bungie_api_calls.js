@@ -3,12 +3,22 @@ const platformUrl = "https://www.bungie.net/Platform";
 const baseUrl = "https://bungie.net";
 const membershipType = "3";
 const manifestUrl = "https://www.bungie.net/Platform/Destiny2/Manifest/DestinyActivityDefinition";
+const characters=  " Destiny2/{membershipType}/Profile/{destinyMembershipId}/Character/{characterId}/"
 const memebershipId = "";
 const character = "";
 export const apiKey = ""
 //=============== end ==================//
 
 //=================== Public, add more below ========================//
+
+export function searchPlayer(name) {
+    return `${platformUrl}/Destiny2/SearchDestinyPlayer/All/${name}`;
+}
+
+export function getCharacters(membershipType, memebershipId) {
+    return `${platformUrl}/Destiny2/${membershipType}/Profile/${memebershipId}/?components=Profiles%2CCharacters`;
+}
+
 export function getActivities() {
     return `${platformUrl}/Destiny2/${membershipType}/Account/${memebershipId}/Character/${character}/Stats/Activities/`;
 }
