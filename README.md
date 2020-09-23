@@ -3,12 +3,13 @@
 # Todos
 
 Server
-- [ ] Setup express server 
+- [X] Setup express server 
 - [ ] Setup middleware if needed
-- [ ] Learn how socket.io works or websockets
-- [ ] Figure out Destiny End points 
+- [X] Learn how socket.io works or websockets
+- [X] Figure out Destiny End points 
 - [ ] Users : Endpoints
-- [ ] Activites : Endpoints
+- [ ] Loop over users 
+- [X] Activites : Endpoints
 - [ ] Use node-cron to hit endpoints everything min/hour 
 - [ ] Cache of some sort
 
