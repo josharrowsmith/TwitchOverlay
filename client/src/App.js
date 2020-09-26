@@ -13,6 +13,7 @@ class App extends Component {
     const { endpoint } = this.state;
     const socket = socketIOClient(endpoint);
     socket.on("FromAPI", data => {
+      console.log(data)
       this.setState({ response: data })
     });
   }
@@ -21,7 +22,7 @@ class App extends Component {
     return (
       <div style={{ textAlign: "center" }}>
         <p>
-          Random Star wars character: {response}
+          Random Star wars character: {JSON.stringify(response)}
         </p>
       </div>
     );

@@ -16,7 +16,6 @@ const getApiAndEmit = async (socket, data) => {
 };
 
 async function searchPlayers(name) {
-    console.log(name)
     const profiles = [];
     const request = await fetch(searchPlayer(name), {
         method: 'GET',
@@ -27,11 +26,7 @@ async function searchPlayers(name) {
     })
     const resData = await request.json();
     const responseArray = await Object.values(resData.Response);
-    const result = await responseArray.map(async i => {
-        let obj = { "key": i.membershipType, "ID": i.membershipId }
-        profiles.push([obj])
-    })
-    return profiles;
+    return responseArray;
 }
 
 async function getCharacterss(membershipType, membershipId) {
@@ -43,8 +38,9 @@ async function getCharacterss(membershipType, membershipId) {
         }
     })
     const resData = await request.json();
-    const response = await resData.Response ? resData.Response.profile.data.characterIds : null;
-    return response;
+    const responseData = await resData.Response.profile.data.characterIds;
+    const responseArray = Object.values(responseData);
+    return responseArray;
 }
 
 async function getActivitiesHashes(membershipType, membershipId, character) {
@@ -56,12 +52,12 @@ async function getActivitiesHashes(membershipType, membershipId, character) {
         }
     })
     const resData = await request.json();
-    const responseObject = await resData.Response ? resData.Response.activities : {};
+    const responseObject = await resData.Response.activities;
     const responseArray = await Object.values(responseObject);
     return responseArray;
 }
 
-async function getData(hash) {
+async function getData(hash, completed, completionReason) {
     const nightFalls = [245243710, 3354105309, 3849697860, 2168858559, 1302909043, 3919254032, 3883876601, 13813394, 766116576, 3455414851, 2533203708, 1002842615, 2694576755, 3200108048, 68611398, 54961125, 3726640183, 1358381372, 380956401, 3597372938, 135872558, 3879949581, 2023667984, 2660931443]
     const request = await fetch(getItemFromManifest(hash), {
         method: 'GET',
@@ -70,23 +66,46 @@ async function getData(hash) {
             "Content-Type": "application/json"
         }
     })
+
+    if (!request.ok) {
+        const errorResData = await response.json();
+        const errorId = errorResData.error.message;
+    }
     const resData = await request.json();
-    const currentHash = await resData.Response.hash;
+    const currentHash = await resData.Response == null ? 0 : resData.Response.hash;
     const found = nightFalls.includes(currentHash);
-    return found;
+    return found && completed === 1 && completionReason === 0 ? 0 : 1;
 }
 
 io.on("connection", socket => {
-    cron.schedule(`* * * * *`, async () => {
+    setTimeout(async () => {
+        console.log("im running")
         const name = "speakableauto"
         const profiles = await searchPlayers(name)
-        const temp = await profiles.map(async (k, i) => {
-            let data = Object.values(...k);
-            const characterId = await getCharacterss(data[0], data[1]);
-        })
+        const membershipType = profiles[0].membershipType;
+        const membershipId = profiles[0].membershipId;
+        const characters = await getCharacterss(membershipType, membershipId)
+        let data = await Promise.all(
+            characters.map(async i => {
+                let filmResponse = await getActivitiesHashes(membershipType, membershipId, i)
+                return filmResponse;
+            })
+        )
+        let newData = [...data[0], ...data[1], ...data[2]]
+        console.log(newData.length)
+        let result = await Promise.all(
+            newData.map(async k => {
+                let cool = await getData(k.activityDetails.directorActivityHash, k.values.completed.basic.value, k.values.completionReason.basic.value)
+                return cool;
+            })
+        ).catch(err => {
+            console.log(err)
+        });
+        const yay = result.filter(i => i === 0).length;
+        console.log('number of the found elements: ' + yay);
 
-        getApiAndEmit(socket, name)
-    })
+        getApiAndEmit(socket, yay)
+    }, 3000);
 })
 
 server.listen(port, () => console.log(`Listening on port ${port}`));

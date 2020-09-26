@@ -4,8 +4,8 @@ const baseUrl = "https://bungie.net";
 const membershipType = "3";
 const manifestUrl = "https://www.bungie.net/Platform/Destiny2/Manifest/DestinyActivityDefinition";
 const characters = " Destiny2/{membershipType}/Profile/{destinyMembershipId}/Character/{characterId}/"
-const memebershipId = "";
-const character = "";
+const memebershipId = "4611686018487695004";
+const character = "2305843009451944152";
 export const apiKey = ""
 //=============== end ==================//
 
@@ -20,7 +20,7 @@ export function getCharacters(membershipType, memebershipId) {
 }
 
 export function getActivities(membershipType, memebershipId, character) {
-    return `${platformUrl}/Destiny2/${membershipType}/Account/${memebershipId}/Character/${character}/Stats/Activities/`;
+    return `${platformUrl}/Destiny2/${membershipType}/Account/${memebershipId}/Character/${character}/Stats/Activities/?mode=ScoredNightfall&count=250&page=0`;
 }
 
 export function getItemFromManifest(id) {
