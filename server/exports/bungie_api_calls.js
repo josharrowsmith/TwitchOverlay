@@ -19,8 +19,8 @@ export function getCharacters(membershipType, memebershipId) {
     return `${platformUrl}/Destiny2/${membershipType}/Profile/${memebershipId}/?components=100,102,103,200,201,202,205,300,301,304,305,306,307,308`;
 }
 
-export function getActivities(membershipType, memebershipId, character) {
-    return `${platformUrl}/Destiny2/${membershipType}/Account/${memebershipId}/Character/${character}/Stats/Activities/?mode=ScoredNightfall&count=250&page=0`;
+export function getActivities(membershipType, memebershipId, character, pages) {
+    return `${platformUrl}/Destiny2/${membershipType}/Account/${memebershipId}/Character/${character}/Stats/Activities/?mode=ScoredNightfall&count=250&page=${pages}`;
 }
 
 export function getItemFromManifest(id) {

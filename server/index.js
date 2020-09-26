@@ -43,8 +43,8 @@ async function getCharacterss(membershipType, membershipId) {
     return responseArray;
 }
 
-async function getActivitiesHashes(membershipType, membershipId, character) {
-    const request = await fetch(getActivities(membershipType, membershipId, character), {
+async function getActivitiesHashes(membershipType, membershipId, character, pages) {
+    const request = await fetch(getActivities(membershipType, membershipId, character, pages), {
         method: 'GET',
         headers: {
             "X-API-Key": apiKey,
@@ -54,7 +54,21 @@ async function getActivitiesHashes(membershipType, membershipId, character) {
     const resData = await request.json();
     const responseObject = await resData.Response.activities;
     const responseArray = await Object.values(responseObject);
-    return responseArray;
+    let temp = []
+    if (responseArray.length >= 250) {
+        const request = await fetch(getActivities(membershipType, membershipId, character, 1), {
+            method: 'GET',
+            headers: {
+                "X-API-Key": apiKey,
+                "Content-Type": "application/json"
+            }
+        })
+        const resData = await request.json();
+        const responseObject = await resData.Response.activities;
+        const newArray = await Object.values(responseObject);
+        temp.push(newArray)
+    }
+    return temp.length >= 1 ? (responseArray + temp) : responseArray;
 }
 
 async function getData(hash, completed, completionReason) {
@@ -87,11 +101,16 @@ io.on("connection", socket => {
         const characters = await getCharacterss(membershipType, membershipId)
         let data = await Promise.all(
             characters.map(async i => {
-                let filmResponse = await getActivitiesHashes(membershipType, membershipId, i)
-                return filmResponse;
+                let hashes = await getActivitiesHashes(membershipType, membershipId, i, 0)
+                // I am stuck on page two 
+                // if (hashes.length >= 250) {
+                //     return await getActivitiesHashes(membershipType, membershipId, i, 1)
+                // }
+                return hashes;
             })
         )
-        let newData = [...data[0], ...data[1], ...data[2]]
+        // How cool is that n number of arrays without push 
+        let newData = [].concat.apply([], [...data])
         console.log(newData.length)
         let result = await Promise.all(
             newData.map(async k => {
@@ -101,10 +120,9 @@ io.on("connection", socket => {
         ).catch(err => {
             console.log(err)
         });
-        const yay = result.filter(i => i === 0).length;
-        console.log('number of the found elements: ' + yay);
-
-        getApiAndEmit(socket, yay)
+        let endResult = result.filter(i => i === 0).length;
+        console.log('number of the found elements: ' + endResult);
+        getApiAndEmit(socket, "yes")
     }, 3000);
 })
 

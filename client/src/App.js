@@ -22,7 +22,7 @@ class App extends Component {
     return (
       <div style={{ textAlign: "center" }}>
         <p>
-          Random Star wars character: {JSON.stringify(response)}
+          Completed Grandmaster nightfalls: {JSON.stringify(response)}
         </p>
       </div>
     );
