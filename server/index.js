@@ -54,21 +54,7 @@ async function getActivitiesHashes(membershipType, membershipId, character, page
     const resData = await request.json();
     const responseObject = await resData.Response.activities;
     const responseArray = await Object.values(responseObject);
-    let temp = []
-    if (responseArray.length >= 250) {
-        const request = await fetch(getActivities(membershipType, membershipId, character, 1), {
-            method: 'GET',
-            headers: {
-                "X-API-Key": apiKey,
-                "Content-Type": "application/json"
-            }
-        })
-        const resData = await request.json();
-        const responseObject = await resData.Response.activities;
-        const newArray = await Object.values(responseObject);
-        temp.push(newArray)
-    }
-    return temp.length >= 1 ? (responseArray + temp) : responseArray;
+    return responseArray;
 }
 
 async function getData(hash, completed, completionReason) {
@@ -101,12 +87,14 @@ io.on("connection", socket => {
         const characters = await getCharacterss(membershipType, membershipId)
         let data = await Promise.all(
             characters.map(async i => {
+                let pages2 = [];
                 let hashes = await getActivitiesHashes(membershipType, membershipId, i, 0)
                 // I am stuck on page two 
-                // if (hashes.length >= 250) {
-                //     return await getActivitiesHashes(membershipType, membershipId, i, 1)
-                // }
-                return hashes;
+                if (hashes.length >= 250) {
+                    const fuck = await getActivitiesHashes(membershipType, membershipId, i, 1)
+                    pages2 = fuck;
+                }
+                return [...pages2, ...hashes];
             })
         )
         // How cool is that n number of arrays without push 
