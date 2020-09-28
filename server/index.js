@@ -16,7 +16,6 @@ const getApiAndEmit = async (socket, data) => {
 };
 
 async function searchPlayers(name) {
-    const profiles = [];
     const request = await fetch(searchPlayer(name), {
         method: 'GET',
         headers: {
@@ -25,8 +24,11 @@ async function searchPlayers(name) {
         }
     })
     const resData = await request.json();
-    const responseArray = await Object.values(resData.Response);
-    return responseArray;
+    if (resData.Response.length > 0) {
+        const responseArray = await Object.values(resData.Response);
+        const pcDetails = responseArray.filter(i => i.membershipType === 3);
+        return pcDetails;
+    }
 }
 
 async function getCharacterss(membershipType, membershipId) {
@@ -53,7 +55,7 @@ async function getActivitiesHashes(membershipType, membershipId, character, page
     })
     const resData = await request.json();
     const responseObject = await resData.Response.activities;
-    const responseArray = await Object.values(responseObject);
+    const responseArray = responseObject !== undefined ? Object.values(responseObject) : [];
     return responseArray;
 }
 
@@ -75,12 +77,13 @@ async function getData(hash, completed, completionReason) {
     const currentHash = await resData.Response == null ? 0 : resData.Response.hash;
     const found = nightFalls.includes(currentHash);
     return found && completed === 1 && completionReason === 0 ? 0 : 1;
-}
+} 1
+
 
 io.on("connection", socket => {
     setTimeout(async () => {
         console.log("im running")
-        const name = "speakableauto"
+        const name = "SpeakableAuto"
         const profiles = await searchPlayers(name)
         const membershipType = profiles[0].membershipType;
         const membershipId = profiles[0].membershipId;
@@ -105,9 +108,7 @@ io.on("connection", socket => {
                 let cool = await getData(k.activityDetails.directorActivityHash, k.values.completed.basic.value, k.values.completionReason.basic.value)
                 return cool;
             })
-        ).catch(err => {
-            console.log(err)
-        });
+        ).catch((err) => console.log(err))
         let endResult = result.filter(i => i === 0).length;
         console.log('number of the found elements: ' + endResult);
         getApiAndEmit(socket, "yes")
