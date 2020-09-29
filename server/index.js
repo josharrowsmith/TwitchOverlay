@@ -3,7 +3,7 @@ import socketIo from "socket.io";
 import http from "http";
 import cron from "node-cron";
 import fetch from "node-fetch";
-import { getActivities, getItemFromManifest, searchPlayer, getCharacters, apiKey } from "./exports/bungie_api_calls"
+import { getActivities, getItemFromManifest, searchPlayer, getCharacters, apiKey, getMainTheMainfest, activityDefinition, nightFalls } from "./exports/bungie_api_calls"
 require('dotenv').config()
 
 const port = process.env.PORT || 4001;
@@ -14,6 +14,32 @@ const io = socketIo(server)
 const getApiAndEmit = async (socket, data) => {
     socket.emit("FromAPI", data);
 };
+
+async function getTheMainfest() {
+    const request = await fetch(getMainTheMainfest(), {
+        method: 'GET',
+        headers: {
+            "X-API-Key": apiKey,
+            "Content-Type": "application/json"
+        }
+    })
+    const resData = await request.json();
+    const responseData = await resData.Response.jsonWorldComponentContentPaths.en.DestinyActivityTypeDefinition;
+    return responseData
+}
+
+async function getActivityTypeDefinition(url) {
+    const request = await fetch(activityDefinition(url), {
+        method: 'GET',
+        headers: {
+            "X-API-Key": apiKey,
+            "Content-Type": "application/json"
+        }
+    })
+    const resData = await request.json();
+    const responseArray = Object.values(resData);
+    // const found = nightFalls.includes(currentHash);
+}
 
 async function searchPlayers(name) {
     const request = await fetch(searchPlayer(name), {
@@ -60,30 +86,32 @@ async function getActivitiesHashes(membershipType, membershipId, character, page
 }
 
 async function getData(hash, completed, completionReason) {
-    const nightFalls = [245243710, 3354105309, 3849697860, 2168858559, 1302909043, 3919254032, 3883876601, 13813394, 766116576, 3455414851, 2533203708, 1002842615, 2694576755, 3200108048, 68611398, 54961125, 3726640183, 1358381372, 380956401, 3597372938, 135872558, 3879949581, 2023667984, 2660931443]
-    const request = await fetch(getItemFromManifest(hash), {
-        method: 'GET',
-        headers: {
-            "X-API-Key": apiKey,
-            "Content-Type": "application/json"
-        }
-    })
+    // I need to get these requests down 
+    const found = nightFalls.includes(hash);
+    if (found) {
+        const request = await fetch(getItemFromManifest(hash), {
+            method: 'GET',
+            headers: {
+                "X-API-Key": apiKey,
+                "Content-Type": "application/json"
+            }
+        })
 
-    if (!request.ok) {
-        const errorResData = await response.json();
-        const errorId = errorResData.error.message;
+        if (!request.ok) {
+            const errorResData = await response.json();
+            const errorId = errorResData.error.message;
+        }
+        return completed === 1 && completionReason === 0 ? 0 : 1;
     }
-    const resData = await request.json();
-    const currentHash = await resData.Response == null ? 0 : resData.Response.hash;
-    const found = nightFalls.includes(currentHash);
-    return found && completed === 1 && completionReason === 0 ? 0 : 1;
-} 1
+    return;
+
+}
 
 
 io.on("connection", socket => {
     setTimeout(async () => {
         console.log("im running")
-        const name = "SpeakableAuto"
+        const name = "jawshbmx"
         const profiles = await searchPlayers(name)
         const membershipType = profiles[0].membershipType;
         const membershipId = profiles[0].membershipId;
@@ -111,7 +139,7 @@ io.on("connection", socket => {
         ).catch((err) => console.log(err))
         let endResult = result.filter(i => i === 0).length;
         console.log('number of the found elements: ' + endResult);
-        getApiAndEmit(socket, "yes")
+        getApiAndEmit(socket, endResult)
     }, 3000);
 })
 
