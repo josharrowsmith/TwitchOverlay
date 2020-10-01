@@ -109,36 +109,35 @@ async function getData(hash, completed, completionReason) {
 
 }
 
-async function receiveData(people, socket) {
-    console.log("run")
-    // const profiles = await searchPlayers(people[socket.id].name)
-    // const membershipType = profiles[0].membershipType;
-    // const membershipId = profiles[0].membershipId;
-    // const characters = await getCharacterss(membershipType, membershipId)
-    // let data = await Promise.all(
-    //     characters.map(async i => {
-    //         let pages2 = [];
-    //         let hashes = await getActivitiesHashes(membershipType, membershipId, i, 0)
-    //         // I am stuck on page two 
-    //         if (hashes.length >= 250) {
-    //             const fuck = await getActivitiesHashes(membershipType, membershipId, i, 1)
-    //             pages2 = fuck;
-    //         }
-    //         return [...pages2, ...hashes];
-    //     })
-    // )
-    // // How cool is that n number of arrays without push 
-    // let newData = [].concat.apply([], [...data])
-    // console.log(newData.length)
-    // let result = await Promise.all(
-    //     newData.map(async k => {
-    //         let cool = await getData(k.activityDetails.directorActivityHash, k.values.completed.basic.value, k.values.completionReason.basic.value)
-    //         return cool;
-    //     })
-    // ).catch((err) => console.log(err))
-    // let endResult = result.filter(i => i === 0).length;
-    // console.log('number of the found elements: ' + endResult);
-    // io.to(people[socket.id].id).emit('FromAPI', endResult);
+async function receiveData(people) {
+    const profiles = await searchPlayers(people.name)
+    const membershipType = profiles[0].membershipType;
+    const membershipId = profiles[0].membershipId;
+    const characters = await getCharacterss(membershipType, membershipId)
+    let data = await Promise.all(
+        characters.map(async i => {
+            let pages2 = [];
+            let hashes = await getActivitiesHashes(membershipType, membershipId, i, 0)
+            // I am stuck on page two 
+            if (hashes.length >= 250) {
+                const fuck = await getActivitiesHashes(membershipType, membershipId, i, 1)
+                pages2 = fuck;
+            }
+            return [...pages2, ...hashes];
+        })
+    )
+    // How cool is that n number of arrays without push 
+    let newData = [].concat.apply([], [...data])
+    console.log(newData.length)
+    let result = await Promise.all(
+        newData.map(async k => {
+            let cool = await getData(k.activityDetails.directorActivityHash, k.values.completed.basic.value, k.values.completionReason.basic.value)
+            return cool;
+        })
+    ).catch((err) => console.log(err))
+    let endResult = result.filter(i => i === 0).length;
+    console.log('number of the found elements: ' + endResult);
+    io.to(people.id).emit('FromAPI', endResult);
 }
 
 
@@ -151,9 +150,9 @@ io.on("connection", socket => {
             name: name,
             id: socket.id
         }
-        receiveData(people, socket)
-        cron.schedule(`* * * * *`, async (people, socket) => {
-            receiveData(people, socket)
+        receiveData(people[socket.id])
+        cron.schedule(`5 * * * *`, async () => {
+            receiveData(people[socket.id])
         });
     });
 })
