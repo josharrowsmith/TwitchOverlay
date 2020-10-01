@@ -25,7 +25,7 @@ export default () => {
 
   return id ? (
     <section style={{ display: 'flex', flexDirection: 'row' }} >
-      <h1>{results}</h1>
+      <h1>{JSON.stringify(results)}</h1>
     </section>
   ) : (
       <div style={{ textAlign: 'center', margin: '30vh auto', width: '70%' }}>

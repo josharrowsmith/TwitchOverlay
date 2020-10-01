@@ -1,10 +1,12 @@
 import express, { response } from "express";
 import socketIo from "socket.io";
 import http from "http";
-import cron from "node-cron";
 import fetch from "node-fetch";
+import cron from "node-cron"
 import { getActivities, getItemFromManifest, searchPlayer, getCharacters, apiKey, getMainTheMainfest, activityDefinition, nightFalls } from "./exports/bungie_api_calls"
 require('dotenv').config()
+
+const people = {};
 
 const port = process.env.PORT || 4001;
 const app = express();
@@ -107,41 +109,51 @@ async function getData(hash, completed, completionReason) {
 
 }
 
+async function receiveData(people, socket) {
+    console.log("run")
+    // const profiles = await searchPlayers(people[socket.id].name)
+    // const membershipType = profiles[0].membershipType;
+    // const membershipId = profiles[0].membershipId;
+    // const characters = await getCharacterss(membershipType, membershipId)
+    // let data = await Promise.all(
+    //     characters.map(async i => {
+    //         let pages2 = [];
+    //         let hashes = await getActivitiesHashes(membershipType, membershipId, i, 0)
+    //         // I am stuck on page two 
+    //         if (hashes.length >= 250) {
+    //             const fuck = await getActivitiesHashes(membershipType, membershipId, i, 1)
+    //             pages2 = fuck;
+    //         }
+    //         return [...pages2, ...hashes];
+    //     })
+    // )
+    // // How cool is that n number of arrays without push 
+    // let newData = [].concat.apply([], [...data])
+    // console.log(newData.length)
+    // let result = await Promise.all(
+    //     newData.map(async k => {
+    //         let cool = await getData(k.activityDetails.directorActivityHash, k.values.completed.basic.value, k.values.completionReason.basic.value)
+    //         return cool;
+    //     })
+    // ).catch((err) => console.log(err))
+    // let endResult = result.filter(i => i === 0).length;
+    // console.log('number of the found elements: ' + endResult);
+    // io.to(people[socket.id].id).emit('FromAPI', endResult);
+}
+
+
 
 io.on("connection", socket => {
 
     // Only when the clients send back a name
     socket.on('init', (name) => {
-        cron.schedule(`* * * * *`, async (name) => {
-            // const name = "speakableauto"
-            const profiles = await searchPlayers(name)
-            const membershipType = profiles[0].membershipType;
-            const membershipId = profiles[0].membershipId;
-            const characters = await getCharacterss(membershipType, membershipId)
-            let data = await Promise.all(
-                characters.map(async i => {
-                    let pages2 = [];
-                    let hashes = await getActivitiesHashes(membershipType, membershipId, i, 0)
-                    // I am stuck on page two 
-                    if (hashes.length >= 250) {
-                        const fuck = await getActivitiesHashes(membershipType, membershipId, i, 1)
-                        pages2 = fuck;
-                    }
-                    return [...pages2, ...hashes];
-                })
-            )
-            // How cool is that n number of arrays without push 
-            let newData = [].concat.apply([], [...data])
-            console.log(newData.length)
-            let result = await Promise.all(
-                newData.map(async k => {
-                    let cool = await getData(k.activityDetails.directorActivityHash, k.values.completed.basic.value, k.values.completionReason.basic.value)
-                    return cool;
-                })
-            ).catch((err) => console.log(err))
-            let endResult = result.filter(i => i === 0).length;
-            console.log('number of the found elements: ' + endResult);
-            getApiAndEmit(socket, endResult)
+        people[socket.id] = {
+            name: name,
+            id: socket.id
+        }
+        receiveData(people, socket)
+        cron.schedule(`* * * * *`, async (people, socket) => {
+            receiveData(people, socket)
         });
     });
 })
