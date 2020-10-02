@@ -143,7 +143,6 @@ async function receiveData(people) {
 
 
 io.on("connection", socket => {
-
     // Only when the clients send back a name
     socket.on('init', (name) => {
         people[socket.id] = {
@@ -157,6 +156,7 @@ io.on("connection", socket => {
     });
 
     socket.on('disconnect', () => {
+        console.log(people[socket.id], "has disconnected");
         if (people[socket.id]) {
             delete people[socket.id];
         }

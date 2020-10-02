@@ -7,7 +7,7 @@ const characters = " Destiny2/{membershipType}/Profile/{destinyMembershipId}/Cha
 const memebershipId = "4611686018487695004";
 const character = "2305843009451944152";
 const getMainfest = "Manifest";
-export const apiKey = ""
+export const apiKey = process.env.apiKey
 //=============== end ==================//
 
 //=================== Public, add more below ========================//
