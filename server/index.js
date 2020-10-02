@@ -126,7 +126,6 @@ async function receiveData(people) {
             return [...pages2, ...hashes];
         })
     )
-    // How cool is that n number of arrays without push 
     let newData = [].concat.apply([], [...data])
     console.log(newData.length, people.name)
     let result = await Promise.all(
