@@ -128,7 +128,7 @@ async function receiveData(people) {
     )
     // How cool is that n number of arrays without push 
     let newData = [].concat.apply([], [...data])
-    console.log(newData.length)
+    console.log(newData.length, people.name)
     let result = await Promise.all(
         newData.map(async k => {
             let cool = await getData(k.activityDetails.directorActivityHash, k.values.completed.basic.value, k.values.completionReason.basic.value)
@@ -154,6 +154,12 @@ io.on("connection", socket => {
         cron.schedule(`5 * * * *`, async () => {
             receiveData(people[socket.id])
         });
+    });
+
+    socket.on('disconnect', () => {
+        if (people[socket.id]) {
+            delete people[socket.id];
+        }
     });
 })
 
