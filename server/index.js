@@ -143,20 +143,26 @@ async function receiveData(people) {
 
 io.on("connection", socket => {
     // Only when the clients send back a name
+    let task = cron.schedule('* * * * *', () => {
+        receiveData(people[socket.id])
+    }, {
+        scheduled: false
+    });
+
     socket.on('init', (name) => {
         people[socket.id] = {
             name: name,
             id: socket.id
         }
         receiveData(people[socket.id])
-        cron.schedule(`5 * * * *`, async () => {
-            receiveData(people[socket.id])
-        });
+        task.start();
+
     });
 
     socket.on('disconnect', () => {
-        console.log(people[socket.id], "has disconnected");
         if (people[socket.id]) {
+            console.log(people[socket.id], "has disconnected");
+            task.stop();
             delete people[socket.id];
         }
     });
