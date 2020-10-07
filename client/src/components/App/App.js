@@ -24,14 +24,14 @@ export default () => {
     };
 
     return id ? (
-        <section style={{ display: 'flex', flexDirection: 'row', justifyContent: "center"}} >
+        <div style={{ width: "150px", height: "150px", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "row" }}>
             <h1>{results}</h1>
-        </section>
+        </div>
     ) : (
-            <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-                <form onSubmit={event => handleSubmit(event)}>
+            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
+                <form style={{ display: "flex", justifyItems: "center", flexDirection: "column" }} onSubmit={event => handleSubmit(event)}>
                     <input id="name" onChange={e => setNameInput(e.target.value.trim())} required placeholder="What is your name .." /><br />
-                    <button type="submit" onClick={() => socket.emit("init", nameInput)}>Submit</button>
+                    <button style={{ width: "100px", alignSelf: "center" }} type="submit" onClick={() => socket.emit("init", nameInput)}>Submit</button>
                 </form>
             </div>
         );
