@@ -3,17 +3,22 @@
 # Todos
 
 Server
-- [X] Setup express server 
+
+- [x] Setup express server
 - [ ] Setup middleware if needed
-- [X] Learn how socket.io works or websockets
-- [X] Figure out Destiny End points 
-- [ ] Users : Endpoints
-- [ ] Loop over users 
-- [X] Activites : Endpoints
-- [ ] Use node-cron to hit endpoints everything min/hour 
+- [x] Learn how socket.io works or websockets
+- [x] Figure out Destiny End points
+- [x] Users : Endpoints
+- [x] Loop over users
+- [x] Activites : Endpoints
+- [x] Use node-cron to hit endpoints everything min/hour
 - [ ] Cache of some sort
+- [ ] docker maybe for scale ?
 
 client
-- [ ] Choose Between Electron or React native windows 
-- [ ] Setup socket.io connection 
+
+- [x] Twitch extension full screen overlay
+- [X] Setup socket.io connection
 - [ ] Animtion on updated data
+- [ ] loot animation with destiny 2 engrams
+- [ ] maybe show the loot you get ?

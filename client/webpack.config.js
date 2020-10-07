@@ -8,17 +8,22 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 // defines where the bundle file will live
 const bundlePath = path.resolve(__dirname, "dist/")
 
-module.exports = (_env, argv) => {
+module.exports = (_env,argv)=> {
   let entryPoints = {
-    VideoOverlay: {
-      path: "./src/VideoOverlay.js",
-      outputHtml: "video_overlay.html",
-      build: true
+    VideoOverlay:{
+      path:"./src/VideoOverlay.js",
+      outputHtml:"video_overlay.html",
+      build:true
     },
-    Mobile: {
-      path: "./src/Mobile.js",
-      outputHtml: "mobile.html",
-      build: true
+    Config:{
+      path:"./src/Config.js",
+      outputHtml:"config.html",
+      build:true
+    },
+    Mobile:{
+      path:"./src/Mobile.js",
+      outputHtml:"mobile.html",
+      build:true
     }
   }
 
@@ -30,21 +35,21 @@ module.exports = (_env, argv) => {
     new webpack.HotModuleReplacementPlugin()
   ]
 
-  for (name in entryPoints) {
-    if (entryPoints[name].build) {
-      entry[name] = entryPoints[name].path
-      if (argv.mode === 'production') {
+  for(name in entryPoints){
+    if(entryPoints[name].build){
+      entry[name]=entryPoints[name].path
+      if(argv.mode==='production'){
         plugins.push(new HtmlWebpackPlugin({
-          inject: true,
-          chunks: [name],
-          template: './template.html',
-          filename: entryPoints[name].outputHtml
+          inject:true,
+          chunks:[name],
+          template:'./template.html',
+          filename:entryPoints[name].outputHtml
         }))
       }
-    }
+    }    
   }
 
-  let config = {
+  let config={
     //entry points for webpack- remove if not used/needed
     entry,
     optimization: {
@@ -59,21 +64,21 @@ module.exports = (_env, argv) => {
         },
         {
           test: /\.css$/,
-          use: ['style-loader', 'css-loader']
+          use: [ 'style-loader', 'css-loader' ]
         },
         {
           test: /\.scss$/,
           use: [
-            "style-loader", // creates style nodes from JS strings
-            "css-loader", // translates CSS into CommonJS
-            "sass-loader", // compiles Sass to CSS, using Node Sass by default
+              "style-loader", // creates style nodes from JS strings
+              "css-loader", // translates CSS into CommonJS
+              "sass-loader", // compiles Sass to CSS, using Node Sass by default
           ]
         },
         {
-          test: /\.(jpe?g|png|gif|svg)$/i,
+          test: /\.(jpe?g|png|gif|svg)$/i, 
           loader: "file-loader",
-          options: {
-            name: "img/[name].[ext]"
+          options:{
+            name:"img/[name].[ext]"
           }
         }
       ]
@@ -81,15 +86,15 @@ module.exports = (_env, argv) => {
     resolve: { extensions: ['*', '.js', '.jsx'] },
     output: {
       filename: "[name].bundle.js",
-      path: bundlePath
+      path:bundlePath
     },
     plugins
   }
 
-  if (argv.mode === 'development') {
+  if(argv.mode==='development'){
     config.devServer = {
-      contentBase: path.join(__dirname, 'public'),
-      host: argv.devrig ? 'localhost.rig.twitch.tv' : 'localhost',
+      contentBase: path.join(__dirname,'public'),
+      host:argv.devrig ? 'localhost.rig.twitch.tv' : 'localhost',
       headers: {
         'Access-Control-Allow-Origin': '*'
       },
@@ -97,20 +102,20 @@ module.exports = (_env, argv) => {
     }
     config.devServer.https = true
   }
-  if (argv.mode === 'production') {
-    config.optimization.splitChunks = {
-      cacheGroups: {
-        default: false,
-        vendors: false,
-        vendor: {
-          chunks: 'all',
-          test: /node_modules/,
-          name: false
+  if(argv.mode==='production'){
+    config.optimization.splitChunks={
+      cacheGroups:{
+        default:false,
+        vendors:false,
+        vendor:{
+          chunks:'all',
+          test:/node_modules/,
+          name:false
         }
       },
-      name: false
+      name:false
     }
-  }
+  }  
 
   return config;
 }
