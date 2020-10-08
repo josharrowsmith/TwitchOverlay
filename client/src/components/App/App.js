@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import useSocket from 'use-socket.io-client';
+import Background from './background.png'
+import './App.css'
 
 export default () => {
     const [id, setId] = useState('');
@@ -23,16 +25,14 @@ export default () => {
         setId(nameInput);
     };
 
-    return id ? (
-        <div style={{ width: "150px", height: "150px", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "row" }}>
-            <h1>{results}</h1>
-        </div>
-    ) : (
-            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
-                <form style={{ display: "flex", justifyItems: "center", flexDirection: "column" }} onSubmit={event => handleSubmit(event)}>
-                    <input id="name" onChange={e => setNameInput(e.target.value.trim())} required placeholder="What is your name .." /><br />
-                    <button style={{ width: "100px", alignSelf: "center" }} type="submit" onClick={() => socket.emit("init", nameInput)}>Submit</button>
-                </form>
+    return (
+        <div className="App">
+            <div className="Engram" style={{
+                background: `url(${Background})`, backgroundPosition: "center"
+            }}>
+                <h2>GM CLEARS</h2>
+                <h2>1</h2>
             </div>
-        );
+        </div>
+    )
 };
