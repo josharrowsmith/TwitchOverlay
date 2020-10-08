@@ -1,13 +1,17 @@
+*:focus {
+  outline: 0 !important;
+}
 
 .App {
   font-family: Helvetica;
   position: relative;
   height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .Engram {
-  position: absolute;
-  bottom: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -17,6 +21,7 @@
   padding: 0.5rem 0.5rem 0 0.5rem;
   justify-content: center;
   box-shadow: 0 10px 6px -6px #777;
+
 }
 
 .Engram > h2 {
