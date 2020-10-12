@@ -5,7 +5,7 @@ import Background from './background.png'
 import './App.css'
 
 const STATIC_DENSITY = 15
-const PARTICLE_SIZE = 6
+const PARTICLE_SIZE = 30
 const PARTICLE_BOUNCYNESS = 0.9
 
 export default () => {
@@ -52,10 +52,12 @@ export default () => {
         World.add(engine.world, [floor])
         Engine.run(engine)
         Render.run(render)
-        setContraints(boxRef.current.getBoundingClientRect())
-        setScene(render)
-        window.addEventListener("resize", handleResize)
-    }, [])
+        if (id) {
+            setContraints(boxRef.current.getBoundingClientRect())
+            setScene(render)
+            window.addEventListener("resize", handleResize)
+        }
+    }, [id])
 
 
     useEffect(() => {
@@ -96,6 +98,7 @@ export default () => {
         if (scene) {
             let { width } = constraints
             let randomX = Math.floor(Math.random() * -width) + width
+
             Matter.World.add(
                 scene.engine.world,
                 Matter.Bodies.circle(randomX, -PARTICLE_SIZE, PARTICLE_SIZE, {
@@ -112,6 +115,9 @@ export default () => {
     useEffect(() => {
         socket.on('FromAPI', (data) => {
             setResults(data)
+            if (data == !results) {
+                handleClick();
+            }
         });
     })
 
@@ -123,15 +129,13 @@ export default () => {
         setId(nameInput);
     };
 
-    return (
-        <div
-           className="App"
-        >
+    return id ? (
+        <div className="App">
             <button onClick={handleClick} className="Engram" style={{
                 background: `url(${Background})`, backgroundPosition: "center"
             }}>
                 <h2>GM CLEARS</h2>
-                <h2>1</h2>
+                <h2>{results}</h2>
             </button>
             <div
                 ref={boxRef}
@@ -147,6 +151,12 @@ export default () => {
                 <canvas ref={canvasRef} />
             </div>
         </div>
-
-    )
+    ) : (
+            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
+                <form style={{ display: "flex", justifyItems: "center", flexDirection: "column" }} onSubmit={event => handleSubmit(event)}>
+                    <input id="name" onChange={e => setNameInput(e.target.value.trim())} required placeholder="What is your name .." /><br />
+                    <button style={{ width: "100px", alignSelf: "center" }} type="submit" onClick={() => socket.emit("init", nameInput)}>Submit</button>
+                </form>
+            </div>
+        );
 };

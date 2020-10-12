@@ -139,12 +139,16 @@ async function receiveData(people) {
     io.to(people.id).emit('FromAPI', endResult);
 }
 
-
+async function keepAlive() {
+    let response = await fetch(process.env.DYNO_URL
+    ).then(() => console.log("good")).catch(() => console.log(error))
+}
 
 io.on("connection", socket => {
     // Only when the clients send back a name
     let task = cron.schedule('* * * * *', () => {
         receiveData(people[socket.id])
+        keepAlive();
     }, {
         scheduled: false
     });
@@ -167,5 +171,12 @@ io.on("connection", socket => {
         }
     });
 })
+
+
+app.get('/', (req, res) => {
+    res.json({
+        message: '🌱🦄🌈✨👋🌎🌍🌏✨🌈🦄🌱'
+    });
+});
 
 server.listen(port, () => console.log(`Listening on port ${port}`));
