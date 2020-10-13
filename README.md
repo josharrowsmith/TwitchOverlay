@@ -19,6 +19,8 @@ client
 
 - [x] Twitch extension full screen overlay
 - [X] Setup socket.io connection
-- [ ] Animtion on updated data
+- [X] Animtion on updated data
+
+Taking longer than expected 
 - [ ] loot animation with destiny 2 engrams
 - [ ] maybe show the loot you get ?
