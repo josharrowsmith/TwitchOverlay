@@ -28,6 +28,8 @@ export default () => {
     const handleClick = () => {
         setSomeStateValue(!someStateValue)
     }
+
+
     useEffect(() => {
         let Engine = Matter.Engine
         let Render = Matter.Render
@@ -52,12 +54,10 @@ export default () => {
         World.add(engine.world, [floor])
         Engine.run(engine)
         Render.run(render)
-        if (id) {
-            setContraints(boxRef.current.getBoundingClientRect())
-            setScene(render)
-            window.addEventListener("resize", handleResize)
-        }
-    }, [id])
+        setContraints(boxRef.current.getBoundingClientRect())
+        setScene(render)
+        window.addEventListener("resize", handleResize)
+    }, [])
 
 
     useEffect(() => {
@@ -96,14 +96,14 @@ export default () => {
     useEffect(() => {
         // Add a new "ball" everytime `someStateValue` changes
         if (scene) {
-            let { width } = constraints
-            let randomX = Math.floor(Math.random() * -width) + width
+            let { width, height } = constraints
 
+            const ball = Matter.Bodies.circle(width / 2, height / 2, PARTICLE_SIZE, {
+                restitution: PARTICLE_BOUNCYNESS,
+            })
             Matter.World.add(
                 scene.engine.world,
-                Matter.Bodies.circle(randomX, -PARTICLE_SIZE, PARTICLE_SIZE, {
-                    restitution: PARTICLE_BOUNCYNESS,
-                })
+                ball
             )
         }
     }, [someStateValue])
@@ -115,11 +115,19 @@ export default () => {
     useEffect(() => {
         socket.on('FromAPI', (data) => {
             setResults(data)
-            if (data == !results) {
-                handleClick();
-            }
         });
     })
+
+
+    const applyForce = () => {
+        Matter.Composite.allBodies(scene.engine.world).forEach(ball => {
+            Matter.Body.applyForce(ball, ball.position, {
+                x: 0,
+                y: -0.2,
+            });
+        });
+
+    }
 
     const handleSubmit = e => {
         e.preventDefault();
@@ -129,7 +137,7 @@ export default () => {
         setId(nameInput);
     };
 
-    return id ? (
+    return (
         <div className="App">
             <button onClick={handleClick} className="Engram" style={{
                 background: `url(${Background})`, backgroundPosition: "center"
@@ -150,13 +158,7 @@ export default () => {
             >
                 <canvas ref={canvasRef} />
             </div>
+            <button onClick={applyForce}>Go up</button>
         </div>
-    ) : (
-            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
-                <form style={{ display: "flex", justifyItems: "center", flexDirection: "column" }} onSubmit={event => handleSubmit(event)}>
-                    <input id="name" onChange={e => setNameInput(e.target.value.trim())} required placeholder="What is your name .." /><br />
-                    <button style={{ width: "100px", alignSelf: "center" }} type="submit" onClick={() => socket.emit("init", nameInput)}>Submit</button>
-                </form>
-            </div>
-        );
+    )
 };
