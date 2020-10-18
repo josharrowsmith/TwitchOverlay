@@ -8,6 +8,9 @@ const STATIC_DENSITY = 15
 const PARTICLE_SIZE = 30
 const PARTICLE_BOUNCYNESS = 0.9
 
+
+export const random = (min, max) => Math.random() * (max - min) + min;
+
 export default () => {
     // Server stuff
     const [id, setId] = useState('');
@@ -105,6 +108,11 @@ export default () => {
                 scene.engine.world,
                 ball
             )
+            Matter.Body.applyForce(ball, ball.position, {
+                x: random(-0.2, 0.2),
+                y: random(-0.2, 0.2)
+            })
+
         }
     }, [someStateValue])
 
