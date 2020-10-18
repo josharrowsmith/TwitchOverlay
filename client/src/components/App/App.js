@@ -7,9 +7,30 @@ import './App.css'
 const STATIC_DENSITY = 15
 const PARTICLE_SIZE = 30
 const PARTICLE_BOUNCYNESS = 0.9
+const angle = 270;
+const spread = 20;
+const velocity = 30;
+const angularVelocity = 0.5;
+const volatility = 0.75;
 
+const random = (min, max) => Math.random() * (max - min) + min;
 
-export const random = (min, max) => Math.random() * (max - min) + min;
+const convertDegreesToRadians = angle => (angle * Math.PI) / 180;
+
+const normalize = (
+    number,
+    currentScaleMin,
+    currentScaleMax,
+    newScaleMin = 0,
+    newScaleMax = 1
+) => {
+    // FIrst, normalize the value between 0 and 1.
+    const standardNormalization =
+        (number - currentScaleMin) / (currentScaleMax - currentScaleMin);
+
+    // Next, transpose that value to our desired scale.
+    return (newScaleMax - newScaleMin) * standardNormalization + newScaleMin;
+};
 
 export default () => {
     // Server stuff
@@ -104,15 +125,37 @@ export default () => {
             const ball = Matter.Bodies.circle(width / 2, height / 2, PARTICLE_SIZE, {
                 restitution: PARTICLE_BOUNCYNESS,
             })
+
+            const particleAngle = random(angle - spread, angle + spread);
+
+            const velocityMultiple = Math.random();
+            const particleVelocity = normalize(
+                velocityMultiple,
+                0,
+                1,
+                velocity - velocity * volatility,
+                velocity + velocity * volatility
+            );
+            const particleAngularVelocity = normalize(
+                velocityMultiple,
+                0,
+                1,
+                angularVelocity - angularVelocity * volatility,
+                angularVelocity + angularVelocity * volatility
+            );
+
+            const particleAngleInRads = convertDegreesToRadians(particleAngle);
+
+            const x = Math.cos(particleAngleInRads) * particleVelocity;
+            const y = Math.sin(particleAngleInRads) * particleVelocity;
+
+            Matter.Body.setVelocity(ball, { x, y });
+            Matter.Body.setAngularVelocity(ball, particleAngularVelocity);
+
             Matter.World.add(
                 scene.engine.world,
                 ball
             )
-            Matter.Body.applyForce(ball, ball.position, {
-                x: random(-0.2, 0.2),
-                y: random(-0.2, 0.2)
-            })
-
         }
     }, [someStateValue])
 
