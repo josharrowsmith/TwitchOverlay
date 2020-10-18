@@ -122,40 +122,42 @@ export default () => {
         if (scene) {
             let { width, height } = constraints
 
-            const ball = Matter.Bodies.circle(width / 2, height / 2, PARTICLE_SIZE, {
-                restitution: PARTICLE_BOUNCYNESS,
-            })
+            for (let i = 0; i < 5; i++) {
+                const ball = Matter.Bodies.circle(width / 2, height / 2, PARTICLE_SIZE, {
+                    restitution: PARTICLE_BOUNCYNESS,
+                })
 
-            const particleAngle = random(angle - spread, angle + spread);
+                const particleAngle = random(angle - spread, angle + spread);
 
-            const velocityMultiple = Math.random();
-            const particleVelocity = normalize(
-                velocityMultiple,
-                0,
-                1,
-                velocity - velocity * volatility,
-                velocity + velocity * volatility
-            );
-            const particleAngularVelocity = normalize(
-                velocityMultiple,
-                0,
-                1,
-                angularVelocity - angularVelocity * volatility,
-                angularVelocity + angularVelocity * volatility
-            );
+                const velocityMultiple = Math.random();
+                const particleVelocity = normalize(
+                    velocityMultiple,
+                    0,
+                    1,
+                    velocity - velocity * volatility,
+                    velocity + velocity * volatility
+                );
+                const particleAngularVelocity = normalize(
+                    velocityMultiple,
+                    0,
+                    1,
+                    angularVelocity - angularVelocity * volatility,
+                    angularVelocity + angularVelocity * volatility
+                );
 
-            const particleAngleInRads = convertDegreesToRadians(particleAngle);
+                const particleAngleInRads = convertDegreesToRadians(particleAngle);
 
-            const x = Math.cos(particleAngleInRads) * particleVelocity;
-            const y = Math.sin(particleAngleInRads) * particleVelocity;
+                const x = Math.cos(particleAngleInRads) * particleVelocity;
+                const y = Math.sin(particleAngleInRads) * particleVelocity;
 
-            Matter.Body.setVelocity(ball, { x, y });
-            Matter.Body.setAngularVelocity(ball, particleAngularVelocity);
+                Matter.Body.setVelocity(ball, { x, y });
+                Matter.Body.setAngularVelocity(ball, particleAngularVelocity);
 
-            Matter.World.add(
-                scene.engine.world,
-                ball
-            )
+                Matter.World.add(
+                    scene.engine.world,
+                    ball
+                )
+            }
         }
     }, [someStateValue])
 
