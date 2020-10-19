@@ -16,8 +16,7 @@ import {
 } from "../../util/index"
 import LoginForm from "./login"
 import DEFAULT_SPRITES from './default-sprites';
-import Background from "../../assets/images/background.png"
-import './App.css'
+import Background from "../../assets/images/background.png
 
 export default () => {
     // Server stuff
@@ -173,10 +172,17 @@ export default () => {
 
         }
     }, [someStateValue])
+    const prevCountRef = useRef();
 
     // Server stuff
     const [socket] = useSocket('https://grandmasternightfalls.herokuapp.com/');
     socket.connect();
+
+    useEffect(() => {
+        prevCountRef.current = results;
+    });
+
+    const prevCount = prevCountRef.current;
 
     useEffect(() => {
         socket.on('FromAPI', (data) => {
@@ -192,26 +198,27 @@ export default () => {
         setId(nameInput);
     };
 
+
     return id ? (
         <div className="App">
-            <button onClick={handleClick} className="Engram" style={{
+            <Confetti
+                width={window.innerWidth}
+                height={window.innerHeight}
+                run={results !== prevCount ? true : false}
+                recycle={false}
+                numberOfPieces={200}
+                confettiSource={{
+                    w: 10,
+                    h: 10,
+                    x: window.innerWidth / 2,
+                    y: window.innerHeight / 2,
+                }}
+            />
+            <div className="Engram" style={{
                 background: `url(${Background})`, backgroundPosition: "center"
             }}>
                 <h2>GM CLEARS</h2>
                 <h2>{results}</h2>
-            </button>
-            <div
-                ref={boxRef}
-                style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    width: "100%",
-                    height: "100%",
-                    pointerEvents: "none",
-                }}
-            >
-                <canvas ref={canvasRef} />
             </div>
         </div>
     ) : (
