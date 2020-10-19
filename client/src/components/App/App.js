@@ -1,36 +1,23 @@
 import React, { useState, useEffect, useRef } from 'react';
 import useSocket from 'use-socket.io-client';
 import Matter from "matter-js"
-import Background from './background.png'
+import {
+    STATIC_DENSITY,
+    airFriction,
+    angle,
+    spread,
+    velocity,
+    angularVelocity,
+    volatility,
+    random,
+    convertDegreesToRadians,
+    normalize,
+    sample
+} from "../../util/index"
+import LoginForm from "./login"
+import DEFAULT_SPRITES from './default-sprites';
+import Background from "../../assets/images/background.png"
 import './App.css'
-
-const STATIC_DENSITY = 15
-const PARTICLE_SIZE = 30
-const PARTICLE_BOUNCYNESS = 0.9
-const angle = 270;
-const spread = 20;
-const velocity = 30;
-const angularVelocity = 0.5;
-const volatility = 0.75;
-
-const random = (min, max) => Math.random() * (max - min) + min;
-
-const convertDegreesToRadians = angle => (angle * Math.PI) / 180;
-
-const normalize = (
-    number,
-    currentScaleMin,
-    currentScaleMax,
-    newScaleMin = 0,
-    newScaleMax = 1
-) => {
-    // FIrst, normalize the value between 0 and 1.
-    const standardNormalization =
-        (number - currentScaleMin) / (currentScaleMax - currentScaleMin);
-
-    // Next, transpose that value to our desired scale.
-    return (newScaleMax - newScaleMin) * standardNormalization + newScaleMin;
-};
 
 export default () => {
     // Server stuff
@@ -45,15 +32,18 @@ export default () => {
     const [scene, setScene] = useState()
     const [someStateValue, setSomeStateValue] = useState(false)
 
+    // Resize the window 
     const handleResize = () => {
         setContraints(boxRef.current.getBoundingClientRect())
     }
 
+    // Main function 
     const handleClick = () => {
         setSomeStateValue(!someStateValue)
+        console.log("yes")
     }
 
-
+    //This setup the the World 
     useEffect(() => {
         let Engine = Matter.Engine
         let Render = Matter.Render
@@ -78,19 +68,21 @@ export default () => {
         World.add(engine.world, [floor])
         Engine.run(engine)
         Render.run(render)
-        setContraints(boxRef.current.getBoundingClientRect())
-        setScene(render)
-        window.addEventListener("resize", handleResize)
-    }, [])
+        if (id) {
+            setContraints(boxRef.current.getBoundingClientRect())
+            setScene(render)
+            window.addEventListener("resize", handleResize)
+        }
+    }, [id])
 
-
+    // Window resize
     useEffect(() => {
         return () => {
             window.removeEventListener("resize", handleResize)
         }
     }, [])
 
-
+    // Setup the scene ie walls 
     useEffect(() => {
         if (constraints) {
             let { width, height } = constraints
@@ -116,16 +108,30 @@ export default () => {
         }
     }, [scene, constraints])
 
-
+    // Add the balls 
     useEffect(() => {
         // Add a new "ball" everytime `someStateValue` changes
         if (scene) {
             let { width, height } = constraints
-
             for (let i = 0; i < 5; i++) {
-                const ball = Matter.Bodies.circle(width / 2, height / 2, PARTICLE_SIZE, {
-                    restitution: PARTICLE_BOUNCYNESS,
-                })
+                const sprite = sample(DEFAULT_SPRITES);
+
+                const config = {
+                    frictionAir: airFriction * sprite.airFrictionMultiplier,
+                    restitution: 0.9,
+                    render: {
+                        sprite: {
+                            texture: sprite.src,
+                        },
+                    },
+                };
+
+                const ball = Matter.Bodies.circle(
+                    width / 2,
+                    height / 2,
+                    sprite.size,
+                    config
+                );
 
                 const particleAngle = random(angle - spread, angle + spread);
 
@@ -153,11 +159,18 @@ export default () => {
                 Matter.Body.setVelocity(ball, { x, y });
                 Matter.Body.setAngularVelocity(ball, particleAngularVelocity);
 
+                // Removes the balls 
+                setTimeout(() => {
+                    Matter.World.remove(scene.engine.world, ball);
+                }, 10000);
+
+                // Main Add function
                 Matter.World.add(
                     scene.engine.world,
                     ball
                 )
             }
+
         }
     }, [someStateValue])
 
@@ -171,17 +184,6 @@ export default () => {
         });
     })
 
-
-    const applyForce = () => {
-        Matter.Composite.allBodies(scene.engine.world).forEach(ball => {
-            Matter.Body.applyForce(ball, ball.position, {
-                x: 0,
-                y: -0.2,
-            });
-        });
-
-    }
-
     const handleSubmit = e => {
         e.preventDefault();
         if (!nameInput) {
@@ -190,7 +192,7 @@ export default () => {
         setId(nameInput);
     };
 
-    return (
+    return id ? (
         <div className="App">
             <button onClick={handleClick} className="Engram" style={{
                 background: `url(${Background})`, backgroundPosition: "center"
@@ -211,7 +213,13 @@ export default () => {
             >
                 <canvas ref={canvasRef} />
             </div>
-            <button onClick={applyForce}>Go up</button>
         </div>
-    )
+    ) : (
+            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
+                <form style={{ display: "flex", justifyItems: "center", flexDirection: "column" }} onSubmit={event => handleSubmit(event)}>
+                    <input id="name" onChange={e => setNameInput(e.target.value.trim())} required placeholder="What is your name .." /><br />
+                    <button style={{ width: "100px", alignSelf: "center" }} type="submit" onClick={() => socket.emit("init", nameInput)}>Submit</button>
+                </form>
+            </div>
+        )
 };
