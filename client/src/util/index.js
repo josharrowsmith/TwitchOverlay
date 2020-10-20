@@ -1,12 +1,12 @@
 export const STATIC_DENSITY = 30
 export const PARTICLE_SIZE = 30
 export const PARTICLE_BOUNCYNESS = 0.9
-export const angle = 270;
+export const angle = 300;
 export const spread = 20;
-export const velocity = 30;
+export const velocity = 40;
 export const angularVelocity = 0.5;
 export const volatility = 0.75;
-export const airFriction = 0.04;
+export const airFriction = 0.02;
 
 export const random = (min, max) => Math.random() * (max - min) + min;
 
