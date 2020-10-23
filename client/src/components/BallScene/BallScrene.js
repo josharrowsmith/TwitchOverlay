@@ -163,16 +163,16 @@ export default function BallScrene({ results }) {
             }
 
         }
-    }, [results])
+    }, [results, someStateValue])
 
     return (
         <div className="App">
-            <div className="Engram" style={{
+            <button onClick={handleClick} className="Engram" style={{
                 background: `url(${Background})`, backgroundPosition: "center"
             }}>
                 <h2>GM CLEARS</h2>
                 <h2>{results}</h2>
-            </div>
+            </button>
             <div
                 ref={boxRef}
                 style={{

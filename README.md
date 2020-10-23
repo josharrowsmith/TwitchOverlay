@@ -20,6 +20,9 @@ client
 - [x] Twitch extension full screen overlay
 - [X] Setup socket.io connection
 - [X] Animtion on updated data
+- [ ] Change login to config page
+- [ ] reszie canvas 
+- [ ] Show different overlay for users and broadcaster
 
 Taking longer than expected 
 - [ ] loot animation with destiny 2 engrams
