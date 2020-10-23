@@ -91,17 +91,17 @@ module.exports = (_env,argv)=> {
     plugins
   }
 
-  if(argv.mode==='development'){
-    config.devServer = {
-      contentBase: path.join(__dirname,'public'),
-      host:argv.devrig ? 'localhost.rig.twitch.tv' : 'localhost',
-      headers: {
-        'Access-Control-Allow-Origin': '*'
-      },
-      port: 8080
-    }
-    config.devServer.https = true;
-  }
+  // if(argv.mode==='development'){
+  //   config.devServer = {
+  //     contentBase: path.join(__dirname,'public'),
+  //     host:argv.devrig ? 'localhost.rig.twitch.tv' : 'localhost',
+  //     headers: {
+  //       'Access-Control-Allow-Origin': '*'
+  //     },
+  //     port: 8080
+  //   }
+  //   config.devServer.https = true;
+  // }
   if(argv.mode==='production'){
     config.optimization.splitChunks={
       cacheGroups:{
