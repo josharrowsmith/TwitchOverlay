@@ -86,7 +86,8 @@ module.exports = (_env,argv)=> {
     resolve: { extensions: ['*', '.js', '.jsx'] },
     output: {
       filename: "[name].bundle.js",
-      path:bundlePath
+      path:bundlePath,
+      publicPath: '/public/'
     },
     plugins
   }
