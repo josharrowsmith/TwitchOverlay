@@ -51,7 +51,7 @@ module.exports = (_env,argv)=> {
 
   let config={
     //entry points for webpack- remove if not used/needed
-    entry,
+    entry: './public/index.html',
     optimization: {
       minimize: false, // this setting is default to false to pass review more easily. you can opt to set this to true to compress the bundles, but also expect an email from the review team to get the full source otherwise. 
     },
