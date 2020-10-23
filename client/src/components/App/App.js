@@ -3,6 +3,8 @@ import useSocket from 'use-socket.io-client';
 import BallScrene from "../BallScene/BallScrene"
 import "./login.css"
 
+const twitch = window.Twitch.ext;
+
 export default () => {
     // Server stuff
     const [id, setId] = useState('');
