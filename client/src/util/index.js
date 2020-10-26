@@ -54,6 +54,20 @@ export const setToken = (token, userId) => {
 
 }
 
+export const getStream = (auth, user) => {
+    console.log(user)
+    fetch(`https://api.twitch.tv/helix/streams`, {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${user}`,
+        'Client-ID': auth,
+    })
+        .then((res) => res.json())
+        .then((res) => {
+            console.log(res)
+        })
+        .catch((err) => console.error('Something broke.', err));
+}
+
 export const isLoggedIn = (opaque_id) => {
     return opaque_id[0] === 'U' ? true : false
 }
