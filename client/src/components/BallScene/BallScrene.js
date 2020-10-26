@@ -48,7 +48,7 @@ export default function BallScrene({ results }) {
             engine: engine,
             canvas: canvasRef.current,
             options: {
-                background: "transparent",
+                background:  "transparent",
                 wireframes: false,
             },
         })
@@ -104,7 +104,7 @@ export default function BallScrene({ results }) {
         // Add a new "ball" everytime `someStateValue` changes
         if (scene) {
             let { width, height } = constraints
-            for (let i = 0; i < 5; i++) {
+            for (let i = 0; i < 10; i++) {
                 const sprite = sample(DEFAULT_SPRITES);
 
                 const config = {
@@ -170,8 +170,8 @@ export default function BallScrene({ results }) {
             <button onClick={handleClick} className="Engram" style={{
                 background: `url(${Background})`, backgroundPosition: "center"
             }}>
-                <h2>GM CLEARS</h2>
-                <h2>{results}</h2>
+                <h4>GM CLEARS</h4>
+                <h4>0</h4>
             </button>
             <div
                 ref={boxRef}

@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
+// this is fucked but i can't be bother to fix it yet
+import 'regenerator-runtime/runtime';
 import useSocket from 'use-socket.io-client';
 import BallScrene from "../BallScene/BallScrene"
 import "./login.css"
@@ -29,6 +31,17 @@ export default () => {
         }
         setId(nameInput);
     };
+
+    // Twitch Tv check if authorized
+    useEffect(() => {
+        async function getToken() {
+            twitch.onAuthorized((auth)=>{
+                console.log(twitch.rig.log(auth))
+            })
+        }
+        getToken();
+    }, []);
+
 
 
     return id ? (
