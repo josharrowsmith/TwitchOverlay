@@ -5,6 +5,7 @@ import 'regenerator-runtime/runtime';
 import useSocket from 'use-socket.io-client';
 import BallScrene from "../BallScene/BallScrene"
 import "./login.css"
+import { async } from 'regenerator-runtime';
 
 const twitch = window.Twitch.ext;
 
@@ -13,6 +14,7 @@ export default () => {
     const [id, setId] = useState('');
     const [nameInput, setNameInput] = useState('');
     const [results, setResults] = useState('');
+    const [room, setRoom] = useState('');
     const [userType, setUserType] = useState('');
     const [loggedIn, setLoggedIn] = useState('');
 
@@ -23,7 +25,7 @@ export default () => {
 
     useEffect(() => {
         socket.on('FromAPI', (data) => {
-            setResults(data)
+            twitch.rig.log(data)
         });
     })
 
@@ -32,10 +34,11 @@ export default () => {
         if (!nameInput) {
             return alert("Name can't be empty");
         }
-        const id = await twitch.onAuthorized((auth) => {
+        const id = twitch.onAuthorized((auth) => {
             twitch.rig.log(auth.channelId);
         })
-        setId("73628599");
+        twitch.rig.log("the id is", id)
+
     };
 
     // Twitch Tv check if authorized
@@ -61,6 +64,7 @@ export default () => {
                     <form onSubmit={event => handleSubmit(event)}>
                         <h1>GrandMaster Checker</h1>
                         <input id="name" onChange={e => setNameInput(e.target.value.trim())} required placeholder="What your username.." /><br />
+                        <input id="room" onChange={e => setRoom(e.target.value.trim())} placeholder="What is your room .." /><br />
                         <div className="submit-button">
                             <button type="submit" onClick={() => socket.emit("init", nameInput, id)}>Submit</button>
                         </div>

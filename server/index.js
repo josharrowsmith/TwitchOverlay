@@ -7,6 +7,7 @@ import { getActivities, getItemFromManifest, searchPlayer, getCharacters, apiKey
 require('dotenv').config()
 
 const people = {};
+const sockmap = {};
 
 const port = process.env.PORT || 4001;
 const app = express();
@@ -103,7 +104,7 @@ async function getData(hash, completed, completionReason) {
             const errorResData = await response.json();
             const errorId = errorResData.error.message;
         }
-        return completed === 1 && completionReason === 0 ? 0 : 1;
+        return completed === 0 && completionReason === 0 ? 0 : 1;
     }
     return;
 
@@ -134,7 +135,7 @@ async function receiveData(people) {
             return cool;
         })
     ).catch((err) => console.log(err))
-    let endResult = result.filter(i => i === 0).length;
+    let endResult = result.filter(i => i === 1).length;
     console.log('number of the found elements: ' + endResult);
     io.to(people.id).emit('FromAPI', endResult);
 }
@@ -146,20 +147,35 @@ async function keepAlive() {
 
 io.on("connection", socket => {
     // Only when the clients send back a name
-    let task = cron.schedule('* * * * *', () => {
-        receiveData(people[socket.id])
-        keepAlive();
-    }, {
-        scheduled: false
-    });
+    // let task = cron.schedule('* * * * *', () => {
+    //     receiveData(people[socket.id])
+    //     keepAlive();
+    // }, {
+    //     scheduled: false
+    // });
 
-    socket.on('init', (name) => {
-        people[socket.id] = {
+    socket.on('join', (name, room) => {
+        socket.join(room);
+
+        if(!people.hasOwnProperty(room)){
+			people[room]={};
+		}
+		
+        people[room][socket.id] = {
             name: name,
             id: socket.id
-        }
-        receiveData(people[socket.id])
-        task.start();
+        };
+        sockmap[socket.id] = {
+			name : name,
+			room : room
+		}
+        if(room=='')
+			socket.emit("update", "You have connected to the default room.");
+		else	
+		socket.emit("FromAPI", `You have connected to room ${room}.`);
+		socket.to(room).broadcast.emit("FromAPI", `${name} has come online. `);
+        // receiveData(people[socket.id])
+        // task.start();
 
     });
 
