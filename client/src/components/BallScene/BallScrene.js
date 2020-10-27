@@ -171,7 +171,7 @@ export default function BallScrene({ results }) {
                 background: `url(${Background})`, backgroundPosition: "center"
             }}>
                 <h4>GM CLEARS</h4>
-                <h4>0</h4>
+                <h4>{results}</h4>
             </button>
             <div
                 ref={boxRef}

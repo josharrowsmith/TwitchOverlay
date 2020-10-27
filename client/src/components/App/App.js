@@ -5,7 +5,6 @@ import 'regenerator-runtime/runtime';
 import useSocket from 'use-socket.io-client';
 import BallScrene from "../BallScene/BallScrene"
 import "./login.css"
-import { async } from 'regenerator-runtime';
 
 const twitch = window.Twitch.ext;
 
@@ -15,6 +14,7 @@ export default () => {
     const [nameInput, setNameInput] = useState('');
     const [results, setResults] = useState('');
     const [room, setRoom] = useState('');
+    const [user, setUserInput] = useState('');
     const [userType, setUserType] = useState('');
     const [loggedIn, setLoggedIn] = useState('');
 
@@ -25,7 +25,7 @@ export default () => {
 
     useEffect(() => {
         socket.on('FromAPI', (data) => {
-            twitch.rig.log(data)
+            setResults(data)
         });
     })
 
@@ -34,12 +34,21 @@ export default () => {
         if (!nameInput) {
             return alert("Name can't be empty");
         }
-        const id = twitch.onAuthorized((auth) => {
-            twitch.rig.log(auth.channelId);
+        await twitch.onAuthorized((auth) => {
+            setId(auth.channelId);
+            setNameInput(nameInput)
+            socket.emit("join", nameInput, auth.channelId, true);
         })
-        twitch.rig.log("the id is", id)
-
     };
+
+    const connectToRoom = async e => {
+        e.preventDefault();
+        await twitch.onAuthorized((auth) => {
+            setId(auth.channelId);
+            setUserInput(auth.userId)
+            socket.emit("join", auth.userId, auth.channelId, false);
+        })
+    }
 
     // Twitch Tv check if authorized
     useEffect(() => {
@@ -64,12 +73,15 @@ export default () => {
                     <form onSubmit={event => handleSubmit(event)}>
                         <h1>GrandMaster Checker</h1>
                         <input id="name" onChange={e => setNameInput(e.target.value.trim())} required placeholder="What your username.." /><br />
-                        <input id="room" onChange={e => setRoom(e.target.value.trim())} placeholder="What is your room .." /><br />
                         <div className="submit-button">
-                            <button type="submit" onClick={() => socket.emit("init", nameInput, id)}>Submit</button>
+                            <button type="submit" onClick={() => console.log("hey")}>Submit</button>
                         </div>
                     </form>
-                </div> : <></>}
+                </div> : <form onSubmit={event => connectToRoom(event)}>
+                        <div className="submit-button">
+                            <button type="submit" onClick={() => console.log("hey")}>Start</button>
+                        </div>
+                    </form>}
 
             </>
         )
