@@ -38,28 +38,6 @@
       "orientation": "Portrait",
       "type": "video_overlay",
       "viewerType": "Broadcaster"
-    },
-    {
-      "channelId": "73628599",
-      "configurationAnchor": "video_overlay",
-      "displayChannelName": "jawshbmx",
-      "features": {
-        "isBitsEnabled": false,
-        "isChatEnabled": false,
-        "isSubscriptionStatusAvailable": false
-      },
-      "frameSize": {
-        "width": 1280,
-        "height": 720
-      },
-      "id": "2",
-      "isPopout": false,
-      "label": "",
-      "linked": false,
-      "linkedUserId": "",
-      "orientation": "Portrait",
-      "type": "video_overlay",
-      "viewerType": "Logged-In Viewer"
     }
   ],
   "manifest": {
@@ -68,7 +46,7 @@
     "authorName": "Jawshbmx",
     "bitsEnabled": false,
     "canInstall": true,
-    "configUrl": "https://localhost:8080/config.html",
+    "configUrl": "https://serene-blackwell-36ad6e.netlify.app/config.html",
     "configurationLocation": "none",
     "description": "",
     "eulaTosUrl": "",
@@ -94,15 +72,15 @@
     "viewerSummary": "",
     "viewerUrl": "",
     "viewerUrls": {
-      "videoOverlay": "https://localhost:8080/video_overlay.html"
+      "videoOverlay": "https://serene-blackwell-36ad6e.netlify.app/video_overlay.html"
     },
     "views": {
       "videoOverlay": {
-        "viewerUrl": "https://localhost:8080/video_overlay.html",
+        "viewerUrl": "https://serene-blackwell-36ad6e.netlify.app/video_overlay.html",
         "canLinkExternalContent": false
       },
       "config": {
-        "viewerUrl": "https://localhost:8080/config.html",
+        "viewerUrl": "https://serene-blackwell-36ad6e.netlify.app/config.html",
         "canLinkExternalContent": false
       }
     },

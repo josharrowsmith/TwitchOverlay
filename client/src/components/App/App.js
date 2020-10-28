@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { setToken, isLoggedIn, getStream } from "../../util"
+import { useImmer } from 'use-immer';
 // this is fucked but i can't be bother to fix it yet
 import 'regenerator-runtime/runtime';
 import useSocket from 'use-socket.io-client';
@@ -7,6 +8,10 @@ import BallScrene from "../BallScene/BallScrene"
 import "./login.css"
 
 const twitch = window.Twitch.ext;
+
+const Messages = props => props.data.map(m => m[0] !== '' ? (<li><strong>{m[0]}</strong> : <div className="innermsg">{m[1]}</div></li>) : (<li className="update">{m[1]}</li>));
+
+const Online = props => props.data.map(m => <li id={m[0]}>{m[1]}</li>)
 
 export default () => {
     // Server stuff
@@ -18,16 +23,38 @@ export default () => {
     const [userType, setUserType] = useState('');
     const [loggedIn, setLoggedIn] = useState('');
 
+    const [messages, setMessages] = useImmer([]);
+    const [online, setOnline] = useImmer([]);
+
 
     // Server stuff
     const [socket] = useSocket('https://grandmasternightfalls.herokuapp.com/');
     socket.connect();
 
     useEffect(() => {
-        socket.on('FromAPI', (data) => {
-            setResults(data)
+        socket.on('update', message => setMessages(draft => {
+            draft.push(['', message]);
+        }))
+
+        socket.on('people-list', people => {
+            let newState = [];
+            for (let person in people) {
+                newState.push([people[person].id, people[person].name]);
+            }
+            setOnline(draft => { draft.push(...newState) });
+            console.log(online)
         });
-    })
+
+        socket.on('add-person', (name, id) => {
+            setOnline(draft => {
+                draft.push([id, name])
+            })
+        })
+
+        socket.on('remove-person', id => {
+            setOnline(draft => draft.filter(m => m[0] !== id))
+        })
+    }, []);
 
     const handleSubmit = async e => {
         e.preventDefault();
@@ -37,7 +64,7 @@ export default () => {
         await twitch.onAuthorized((auth) => {
             setId(auth.channelId);
             setNameInput(nameInput)
-            socket.emit("join", nameInput, auth.channelId, true);
+            socket.emit("join", nameInput, auth.channelId, nameInput);
         })
     };
 
@@ -66,7 +93,10 @@ export default () => {
 
 
     return id ? (
-        <BallScrene results={results} />
+        <section style={{ display: 'flex', flexDirection: 'row' }} >
+            <ul style={{color: "white"}} id="messages"><Messages data={messages} /></ul>
+            <ul style={{color: "white"}} id="online"> 🌐 : <Online data={online} /> </ul>
+        </section>
     ) : (
             <>
                 {userType == 'broadcaster' ? <div className="login">
@@ -74,12 +104,12 @@ export default () => {
                         <h1>GrandMaster Checker</h1>
                         <input id="name" onChange={e => setNameInput(e.target.value.trim())} required placeholder="What your username.." /><br />
                         <div className="submit-button">
-                            <button type="submit" onClick={() => console.log("hey")}>Submit</button>
+                            <button type="submit">Submit</button>
                         </div>
                     </form>
                 </div> : <form onSubmit={event => connectToRoom(event)}>
                         <div className="submit-button">
-                            <button type="submit" onClick={() => console.log("hey")}>Start</button>
+                            <button type="submit">Start</button>
                         </div>
                     </form>}
 

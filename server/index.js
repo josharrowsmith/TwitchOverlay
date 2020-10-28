@@ -3,14 +3,20 @@ import socketIo from "socket.io";
 import http from "http";
 import fetch from "node-fetch";
 import cron from "node-cron"
+const session = require("express-session")({
+    secret: "my-secret",
+    resave: true,
+    saveUninitialized: true
+});
 import { getActivities, getItemFromManifest, searchPlayer, getCharacters, apiKey, getMainTheMainfest, activityDefinition, nightFalls } from "./exports/bungie_api_calls"
 require('dotenv').config()
 
 const people = {};
 const sockmap = {};
 
-const port = process.env.PORT || 4001;
+const port = process.env.PORT || 8081;
 const app = express();
+app.use(session)
 const server = http.createServer(app);
 const io = socketIo(server)
 
@@ -110,43 +116,50 @@ async function getData(hash, completed, completionReason) {
 
 }
 
-async function receiveData(people, room, socket) {
-    const data = Object.values(people);
-    for (const [key, value] of Object.entries(data[0])) {
-        if (value.owner == true) {
-            const profiles = await searchPlayers(value.name)
-            const membershipType = profiles[0].membershipType;
-            const membershipId = profiles[0].membershipId;
-            const characters = await getCharacterss(membershipType, membershipId)
-            let data = await Promise.all(
-                characters.map(async i => {
-                    let pages2 = [];
-                    let hashes = await getActivitiesHashes(membershipType, membershipId, i, 0)
-                    // I am stuck on page two 
-                    if (hashes.length >= 250) {
-                        const fuck = await getActivitiesHashes(membershipType, membershipId, i, 1)
-                        pages2 = fuck;
-                    }
-                    return [...pages2, ...hashes];
-                })
-            )
-            let newData = [].concat.apply([], [...data])
-            console.log(newData.length)
-            let result = await Promise.all(
-                newData.map(async k => {
-                    let cool = await getData(k.activityDetails.directorActivityHash, k.values.completed.basic.value, k.values.completionReason.basic.value)
-                    return cool;
-                })
-            ).catch((err) => console.log(err))
-            let endResult = result.filter(i => i === 1).length;
-            console.log('number of the found elements: ' + endResult);
-            io.to(value.id).emit('FromAPI', endResult);
-            socket.to(room).broadcast.emit("FromAPI", endResult);
-        } else {
-            console.log("not a onwer")
-        }
+async function receiveData(socket, room, owner) {
+    console.log(typeof owner);
+    if (typeof owner === 'string') {
+        setInterval(() => {
+            socket.emit("update", `${owner}`);
+            socket.to(room).broadcast.emit("update", `${owner}`);
+        }, 3000);
     }
-
+    // console.log("the room is", room);
+    // const data = Object.values(people);
+    // for (const [key, value] of Object.entries(data[0])) {
+    //     if (value.owner == true) {
+    //         const profiles = await searchPlayers(value.name)
+    //         const membershipType = profiles[0].membershipType;
+    //         const membershipId = profiles[0].membershipId;
+    //         const characters = await getCharacterss(membershipType, membershipId)
+    //         let data = await Promise.all(
+    //             characters.map(async i => {
+    //                 let pages2 = [];
+    //                 let hashes = await getActivitiesHashes(membershipType, membershipId, i, 0)
+    //                 // I am stuck on page two 
+    //                 if (hashes.length >= 250) {
+    //                     const fuck = await getActivitiesHashes(membershipType, membershipId, i, 1)
+    //                     pages2 = fuck;
+    //                 }
+    //                 return [...pages2, ...hashes];
+    //             })
+    //         )
+    //         let newData = [].concat.apply([], [...data])
+    //         console.log(newData.length)
+    //         let result = await Promise.all(
+    //             newData.map(async k => {
+    //                 let cool = await getData(k.activityDetails.directorActivityHash, k.values.completed.basic.value, k.values.completionReason.basic.value)
+    //                 return cool;
+    //             })
+    //         ).catch((err) => console.log(err))
+    //         let endResult = result.filter(i => i === 1).length;
+    //         console.log('number of the found elements: ' + endResult);
+    //         io.to(value.id).emit('FromAPI', endResult);
+    //         socket.to(room).broadcast.emit("FromAPI", endResult);
+    //     } else {
+    //         console.log("not a onwer")
+    //     }
+    // }
 }
 
 async function keepAlive() {
@@ -155,18 +168,9 @@ async function keepAlive() {
 }
 
 io.on("connection", socket => {
-    // Only when the clients send back a name
-    let task = cron.schedule('* * * * *', () => {
-        receiveData(people, room, socket)
-        keepAlive();
-    }, {
-        scheduled: false
-    });
-
     socket.on('join', (name, room, owner) => {
+        console.log(name, room, owner);
         socket.join(room);
-        console.log(name, room)
-
         if (!people.hasOwnProperty(room)) {
             people[room] = {};
         }
@@ -174,28 +178,29 @@ io.on("connection", socket => {
         people[room][socket.id] = {
             name: name,
             id: socket.id,
-            owner: owner
         };
         sockmap[socket.id] = {
             name: name,
             room: room,
-            owner: owner
         }
         if (room == '')
             socket.emit("update", "You have connected to the default room.");
         else
-            // socket.emit("FromAPI", `You have connected to room ${room}.`);
-            // socket.to(room).broadcast.emit("FromAPI", `${name} has come online. `);
-            receiveData(people, room, socket)
-            task.start(people, room, sokcet);
-
+            socket.emit("update", `You have connected to room ${room}.`);
+        socket.emit("people-list", people[room]);
+        socket.to(room).broadcast.emit("add-person", name, socket.id);
+        socket.to(room).broadcast.emit("update", `${name} has come online. `);
+        receiveData(socket, room, owner);
+        // setInterval(() => { socket.to("test").broadcast.emit("update", `hey`); }, 3000);
     });
 
     socket.on('disconnect', () => {
-        if (people[socket.id]) {
-            console.log(people[socket.id], "has disconnected");
-            task.stop();
-            delete people[socket.id];
+        if (sockmap[socket.id]) {
+            const room = sockmap[socket.id].room;
+            socket.to(room).broadcast.emit("update", `${sockmap[socket.id].name} has disconnected. `);
+            console.log("has been deleted", `${sockmap[socket.id].name}`)
+            delete people[room][socket.id];
+            delete sockmap[socket.id];
         }
     });
 })
