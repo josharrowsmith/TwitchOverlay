@@ -36,6 +36,10 @@ export default () => {
             draft.push(['', message]);
         }))
 
+        socket.on('FromAPI', (data) => {
+            setResults(data)
+        });
+
         socket.on('people-list', people => {
             let newState = [];
             for (let person in people) {
@@ -93,10 +97,7 @@ export default () => {
 
 
     return id ? (
-        <section style={{ display: 'flex', flexDirection: 'row' }} >
-            <ul style={{color: "white"}} id="messages"><Messages data={messages} /></ul>
-            <ul style={{color: "white"}} id="online"> 🌐 : <Online data={online} /> </ul>
-        </section>
+        <BallScrene results={results} />
     ) : (
             <>
                 {userType == 'broadcaster' ? <div className="login">

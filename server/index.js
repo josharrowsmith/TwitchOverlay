@@ -117,49 +117,41 @@ async function getData(hash, completed, completionReason) {
 }
 
 async function receiveData(socket, room, owner) {
-    console.log(typeof owner);
     if (typeof owner === 'string') {
-        setInterval(() => {
-            socket.emit("update", `${owner}`);
-            socket.to(room).broadcast.emit("update", `${owner}`);
-        }, 3000);
+        // setInterval(() => {
+        //     socket.emit("update", `${owner}`);
+        //     socket.to(room).broadcast.emit("update", `${owner}`);
+        // }, 3000);
+        const profiles = await searchPlayers(owner)
+        const membershipType = profiles[0].membershipType;
+        const membershipId = profiles[0].membershipId;
+        const characters = await getCharacterss(membershipType, membershipId)
+        let data = await Promise.all(
+            characters.map(async i => {
+                let pages2 = [];
+                let hashes = await getActivitiesHashes(membershipType, membershipId, i, 0)
+                // I am stuck on page two 
+                if (hashes.length >= 250) {
+                    const fuck = await getActivitiesHashes(membershipType, membershipId, i, 1)
+                    pages2 = fuck;
+                }
+                return [...pages2, ...hashes];
+            })
+        )
+        let newData = [].concat.apply([], [...data])
+        console.log(newData.length)
+        let result = await Promise.all(
+            newData.map(async k => {
+                let cool = await getData(k.activityDetails.directorActivityHash, k.values.completed.basic.value, k.values.completionReason.basic.value)
+                return cool;
+            })
+        ).catch((err) => console.log(err))
+        let endResult = result.filter(i => i === 1).length;
+        console.log('number of the found elements: ' + endResult);
+        socket.emit("FromAPI", endResult);
+        socket.to(room).broadcast.emit("FromAPI", endResult);
     }
-    // console.log("the room is", room);
-    // const data = Object.values(people);
-    // for (const [key, value] of Object.entries(data[0])) {
-    //     if (value.owner == true) {
-    //         const profiles = await searchPlayers(value.name)
-    //         const membershipType = profiles[0].membershipType;
-    //         const membershipId = profiles[0].membershipId;
-    //         const characters = await getCharacterss(membershipType, membershipId)
-    //         let data = await Promise.all(
-    //             characters.map(async i => {
-    //                 let pages2 = [];
-    //                 let hashes = await getActivitiesHashes(membershipType, membershipId, i, 0)
-    //                 // I am stuck on page two 
-    //                 if (hashes.length >= 250) {
-    //                     const fuck = await getActivitiesHashes(membershipType, membershipId, i, 1)
-    //                     pages2 = fuck;
-    //                 }
-    //                 return [...pages2, ...hashes];
-    //             })
-    //         )
-    //         let newData = [].concat.apply([], [...data])
-    //         console.log(newData.length)
-    //         let result = await Promise.all(
-    //             newData.map(async k => {
-    //                 let cool = await getData(k.activityDetails.directorActivityHash, k.values.completed.basic.value, k.values.completionReason.basic.value)
-    //                 return cool;
-    //             })
-    //         ).catch((err) => console.log(err))
-    //         let endResult = result.filter(i => i === 1).length;
-    //         console.log('number of the found elements: ' + endResult);
-    //         io.to(value.id).emit('FromAPI', endResult);
-    //         socket.to(room).broadcast.emit("FromAPI", endResult);
-    //     } else {
-    //         console.log("not a onwer")
-    //     }
-    // }
+
 }
 
 async function keepAlive() {
@@ -168,6 +160,14 @@ async function keepAlive() {
 }
 
 io.on("connection", socket => {
+    // Only when the clients send back a name
+    let task = (socket, room, owner) => {
+        cron.schedule('* * * * *', () => {
+            receiveData(socket, room, owner)
+            keepAlive();
+        });
+    }
+
     socket.on('join', (name, room, owner) => {
         console.log(name, room, owner);
         socket.join(room);
@@ -190,8 +190,9 @@ io.on("connection", socket => {
         socket.emit("people-list", people[room]);
         socket.to(room).broadcast.emit("add-person", name, socket.id);
         socket.to(room).broadcast.emit("update", `${name} has come online. `);
+        // no idea
         receiveData(socket, room, owner);
-        // setInterval(() => { socket.to("test").broadcast.emit("update", `hey`); }, 3000);
+        task(socket, room, owner);
     });
 
     socket.on('disconnect', () => {
@@ -201,6 +202,7 @@ io.on("connection", socket => {
             console.log("has been deleted", `${sockmap[socket.id].name}`)
             delete people[room][socket.id];
             delete sockmap[socket.id];
+            task = null;
         }
     });
 })
