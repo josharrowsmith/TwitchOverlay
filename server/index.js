@@ -160,14 +160,6 @@ async function keepAlive() {
 }
 
 io.on("connection", socket => {
-    // Only when the clients send back a name
-    let task = (socket, room, owner) => {
-        cron.schedule('* * * * *', () => {
-            receiveData(socket, room, owner)
-            keepAlive();
-        });
-    }
-
     socket.on('join', (name, room, owner) => {
         console.log(name, room, owner);
         socket.join(room);
@@ -192,18 +184,23 @@ io.on("connection", socket => {
         socket.to(room).broadcast.emit("update", `${name} has come online. `);
         // no idea
         receiveData(socket, room, owner);
-        task(socket, room, owner);
-    });
-
-    socket.on('disconnect', () => {
-        if (sockmap[socket.id]) {
-            const room = sockmap[socket.id].room;
-            socket.to(room).broadcast.emit("update", `${sockmap[socket.id].name} has disconnected. `);
-            console.log("has been deleted", `${sockmap[socket.id].name}`)
-            delete people[room][socket.id];
-            delete sockmap[socket.id];
-            task = null;
-        }
+        var task = cron.schedule('* * * * *', () => {
+            receiveData(socket, room, owner)
+            keepAlive();
+        }, {
+            scheduled: false
+        });
+        task.start();
+        socket.on('disconnect', () => {
+            if (sockmap[socket.id]) {
+                const room = sockmap[socket.id].room;
+                socket.to(room).broadcast.emit("update", `${sockmap[socket.id].name} has disconnected. `);
+                console.log("has been deleted", `${sockmap[socket.id].name}`)
+                delete people[room][socket.id];
+                delete sockmap[socket.id];
+                task.stop();
+            }
+        })
     });
 })
 
