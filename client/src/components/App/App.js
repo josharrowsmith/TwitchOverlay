@@ -81,8 +81,8 @@ export default () => {
                             <button type="submit">Submit</button>
                         </div>
                     </form>
-                </div> : <form onSubmit={event => connectToRoom(event)}>
-                        <div className="submit-button">
+                </div> : <form className="start" onSubmit={event => connectToRoom(event)}>
+                        <div className="start-button">
                             <button type="submit">Start</button>
                         </div>
                     </form>}

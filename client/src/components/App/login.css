@@ -75,3 +75,25 @@ button {
 .submit-button {
   text-align: center;
 }
+
+.start {
+  position: relative;
+  height: 100vh;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-end;
+}
+
+.start-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 60px;
+  margin: 0 0 100px 50px;
+  width: 170px;
+  height: 100px;
+  justify-content: center;
+  padding: 0.5rem 0.5rem 0 0.5rem;
+  border-color: transparent;
+}
