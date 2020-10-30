@@ -22,6 +22,7 @@ export default () => {
     const [user, setUserInput] = useState('');
     const [userType, setUserType] = useState('');
     const [loggedIn, setLoggedIn] = useState('');
+    const [loading, setLoading] = useState(false)
 
     const [messages, setMessages] = useImmer([]);
     const [online, setOnline] = useImmer([]);
@@ -32,13 +33,11 @@ export default () => {
     socket.connect();
 
     useEffect(() => {
+
+        // For testing
         socket.on('update', message => setMessages(draft => {
             draft.push(['', message]);
         }))
-
-        socket.on('FromAPI', (data) => {
-            setResults(data)
-        });
 
         socket.on('people-list', people => {
             let newState = [];
@@ -58,8 +57,17 @@ export default () => {
         socket.on('remove-person', id => {
             setOnline(draft => draft.filter(m => m[0] !== id))
         })
+
+        // Main results function
+        socket.on('FromAPI', (data) => {
+            setResults(data)
+            setLoading(true)
+        });
+
+      
     }, []);
 
+    // Streamer entry
     const handleSubmit = async e => {
         e.preventDefault();
         if (!nameInput) {
@@ -72,6 +80,7 @@ export default () => {
         })
     };
 
+    // Watcher entry
     const connectToRoom = async e => {
         e.preventDefault();
         await twitch.onAuthorized((auth) => {
@@ -97,7 +106,7 @@ export default () => {
 
 
     return id ? (
-        <BallScrene results={results} />
+        <BallScrene results={results} loading={loading} />
     ) : (
             <>
                 {userType == 'broadcaster' ? <div className="login">
@@ -113,7 +122,6 @@ export default () => {
                             <button type="submit">Start</button>
                         </div>
                     </form>}
-
             </>
         )
 };

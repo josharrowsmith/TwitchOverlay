@@ -15,9 +15,10 @@ import {
 } from "../../util/index"
 import DEFAULT_SPRITES from './default-sprites';
 import Background from "../../assets/images/background.png";
+import SpinnerDotsScale from "../App/loading";
 import "./App.css"
 
-export default function BallScrene({ results }) {
+export default function BallScrene({ results, loading }) {
     // Mater Stuff
     const boxRef = useRef(null)
     const canvasRef = useRef(null)
@@ -30,8 +31,8 @@ export default function BallScrene({ results }) {
         setContraints(boxRef.current.getBoundingClientRect())
     }
 
-     // Main function 
-     const handleClick = () => {
+    // Main function 
+    const handleClick = () => {
         setSomeStateValue(!someStateValue)
         console.log("yes")
     }
@@ -48,7 +49,7 @@ export default function BallScrene({ results }) {
             engine: engine,
             canvas: canvasRef.current,
             options: {
-                background:  "transparent",
+                background: "transparent",
                 wireframes: false,
             },
         })
@@ -165,13 +166,19 @@ export default function BallScrene({ results }) {
         }
     }, [results, someStateValue])
 
+    console.log(loading)
+
     return (
         <div className="App">
             <button onClick={handleClick} className="Engram" style={{
                 background: `url(${Background})`, backgroundPosition: "center"
             }}>
                 <h4>GM CLEARS</h4>
-                <h4>{results}</h4>
+                {loading ? (
+                    <h4>{results}</h4>
+                ) : (
+                        <SpinnerDotsScale />
+                    )}
             </button>
             <div
                 ref={boxRef}

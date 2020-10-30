@@ -118,10 +118,6 @@ async function getData(hash, completed, completionReason) {
 
 async function receiveData(socket, room, owner) {
     if (typeof owner === 'string') {
-        // setInterval(() => {
-        //     socket.emit("update", `${owner}`);
-        //     socket.to(room).broadcast.emit("update", `${owner}`);
-        // }, 3000);
         const profiles = await searchPlayers(owner)
         const membershipType = profiles[0].membershipType;
         const membershipId = profiles[0].membershipId;
