@@ -175,7 +175,7 @@ export default function BallScrene({ results, loading }) {
             }}>
                 <p>GM CLEARS</p>
                 {loading ? (
-                    <h4>{results}</h4>
+                    <p>{results}</p>
                 ) : (
                         <SpinnerDotsScale />
                     )}
