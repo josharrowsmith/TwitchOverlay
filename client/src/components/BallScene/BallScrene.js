@@ -173,7 +173,7 @@ export default function BallScrene({ results, loading }) {
             <button onClick={handleClick} className="Engram" style={{
                 background: `url(${Background})`, backgroundPosition: "center"
             }}>
-                <h4>GM CLEARS</h4>
+                <p>GM CLEARS</p>
                 {loading ? (
                     <h4>{results}</h4>
                 ) : (
