@@ -166,8 +166,6 @@ export default function BallScrene({ results, loading }) {
         }
     }, [results, someStateValue])
 
-    console.log(loading)
-
     return (
         <div className="App">
             <button onClick={handleClick} className="Engram" style={{

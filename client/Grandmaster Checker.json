@@ -10,7 +10,7 @@
       "value": "https://localhost:8080"
     },
     {
-      "isAllowed": false,
+      "isAllowed": true,
       "isEphemeral": false,
       "isOrigin": true,
       "value": "wss://localhost:8080"
@@ -18,7 +18,7 @@
   ],
   "extensionViews": [
     {
-      "channelId": "73628599",
+      "channelId": "78373503",
       "configurationAnchor": "video_overlay",
       "displayChannelName": "jawshbmx",
       "features": {
@@ -46,17 +46,17 @@
     "authorName": "Jawshbmx",
     "bitsEnabled": false,
     "canInstall": true,
-    "configUrl": "https://serene-blackwell-36ad6e.netlify.app/config.html",
+    "configUrl": "https://localhost:8080/config.html",
     "configurationLocation": "none",
     "description": "",
     "eulaTosUrl": "",
     "hasChatSupport": false,
     "iconUrl": "",
     "iconUrls": {},
-    "id": "9iuzmgvw2qep2dk73mwgvycs9lixtf",
+    "id": "ly9lrjec93lszlqo8k0vib84cskfxb",
     "installationCount": -42,
     "liveConfigUrl": "",
-    "name": "Beta 2",
+    "name": "Grandmaster Checker",
     "panelHeight": 0,
     "privacyPolicyUrl": "",
     "requestIdentityLink": false,
@@ -68,27 +68,27 @@
     "summary": "",
     "supportEmail": "bmx_the_bomb@hotmail.com",
     "vendorCode": "",
-    "version": "2",
+    "version": "0.0.1",
     "viewerSummary": "",
     "viewerUrl": "",
     "viewerUrls": {
-      "videoOverlay": "https://serene-blackwell-36ad6e.netlify.app/video_overlay.html"
+      "videoOverlay": "https://localhost:8080/video_overlay.html"
     },
     "views": {
       "videoOverlay": {
-        "viewerUrl": "https://serene-blackwell-36ad6e.netlify.app/video_overlay.html",
+        "viewerUrl": "https://localhost:8080/video_overlay.html",
         "canLinkExternalContent": false
       },
       "config": {
-        "viewerUrl": "https://serene-blackwell-36ad6e.netlify.app/config.html",
+        "viewerUrl": "https://localhost:8080/config.html",
         "canLinkExternalContent": false
       }
     },
     "whitelistedConfigUrls": [],
     "whitelistedPanelUrls": []
   },
-  "frontendCommand": "npm start ",
-  "frontendFolderName": "C:\\Users\\bmx_t\\OneDrive\\Documents\\code\\git\\TwitchOverlay\\client",
-  "name": "Beta 2",
+  "frontendCommand": "npm start",
+  "frontendFolderName": "",
+  "name": "Grandmaster Checker",
   "version": 2
 }

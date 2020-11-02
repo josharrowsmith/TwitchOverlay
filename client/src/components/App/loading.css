@@ -1,6 +1,5 @@
 .Spinner {
   height: 29px;
-  margin: auto;
   display: flex;
   opacity: 0;
   justify-content: center;
