@@ -14,6 +14,7 @@ Server
 - [x] Use node-cron to hit endpoints everything min/hour
 - [ ] Cache of some sort
 - [ ] docker maybe for scale ?
+- [ ] update client on connection
 
 client
 
@@ -22,8 +23,17 @@ client
 - [X] Animtion on updated data
 - [ ] Change login to config page
 - [ ] reszie canvas 
-- [ ] Show different overlay for users and broadcaster
+- [X] Show different overlay for users and broadcaster
 
-Taking longer than expected 
-- [ ] loot animation with destiny 2 engrams
-- [ ] maybe show the loot you get ?
+Screenshots
+
+Streamer View
+
+![Alt Text](./screenshots/login.png)
+![Alt Text](./screenshots/live.png)
+![Alt Text](./screenshots/twitch.gif)
+
+Client
+
+![Alt Text](./screenshots/client.png)
+![Alt Text](./screenshots/live.png)
